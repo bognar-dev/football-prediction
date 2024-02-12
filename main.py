@@ -48,7 +48,7 @@ away_players = ["away_player_" + str(x) for x in range(1, 12)]
 
 betting_columns = ["B365H", "B365D", "B365A"]
 
-matches_kept_columns = ["id", "date", "home_team_api_id", "away_team_api_id", "home_team_goal", "away_team_goal"]
+matches_kept_columns = ["id", "date", "home_team_api_id","league_id", "away_team_api_id", "home_team_goal", "away_team_goal"]
 matches_kept_columns = matches_kept_columns + home_players
 matches_kept_columns = matches_kept_columns + away_players
 matches_kept_columns = matches_kept_columns + betting_columns
@@ -91,7 +91,7 @@ match_data['std_overall_rating_away'] = match_data[['overall_rating_' + p for p 
 columns_list = match_data.columns.tolist()
 print(columns_list)
 
-X = match_data[['home_team_api_id', 'away_team_api_id', 'home_team_goal', 'away_team_goal',
+X = match_data[['home_team_api_id', 'away_team_api_id','league_id' ,'home_team_goal', 'away_team_goal',
                 'overall_rating_home', 'overall_rating_away', 'overall_rating_difference',
                  ]]
 y = match_data['home_status']  # Assuming 'home_status' is your target variable
