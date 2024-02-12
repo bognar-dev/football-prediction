@@ -3,10 +3,26 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from time import time
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.metrics import precision_score, recall_score, f1_score
+
+from sklearn.metrics import confusion_matrix
+import seaborn as sns
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC, LinearSVC, NuSVC
+
+
+def plot_confusionMatrix(y_true, y_pred):
+    cn = confusion_matrix(y_true=y_true, y_pred=y_pred)
+
+    fig, ax = plt.subplots(figsize=(5, 5))
+    sns.heatmap(cn, annot=True, linewidths=1.5)
+    plt.show()
+    return cn
+
 
 start = time()
 ## Fetching data
@@ -76,41 +92,71 @@ columns_list = match_data.columns.tolist()
 print(columns_list)
 
 X = match_data[['home_team_api_id', 'away_team_api_id', 'home_team_goal', 'away_team_goal',
+                'overall_rating_home', 'overall_rating_away', 'overall_rating_difference',
                  ]]
 y = match_data['home_status']  # Assuming 'home_status' is your target variable
 
 # Split the data into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-# Initialize and train the model
-model = RandomForestClassifier()
-model.fit(X_train, y_train)
-
-# Make predictions on the test set
-predictions = model.predict(X_test)
-
-# Evaluate the model
-accuracy = accuracy_score(y_test, predictions)
-conf_matrix = confusion_matrix(y_test, predictions)
-
-print("Accuracy:", accuracy)
-# Calculate and print precision, recall, and F1-score
-precision = precision_score(y_test, predictions, average='weighted')
-recall = recall_score(y_test, predictions, average='weighted')
-f1 = f1_score(y_test, predictions, average='weighted')
-
-print(f"Precision: {precision}")
-print(f"Recall: {recall}")
-print(f"F1-score: {f1}")
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
 
-game_features = {
-    'home_team_api_id': [10269],
-    'away_team_api_id': [9823],
-    'home_team_goal': [0],
-    'away_team_goal': [1],
-}
+
+models = [
+    RandomForestClassifier(),
+    GradientBoostingClassifier(),
+    LogisticRegression(),
+    SVC(),
+    LinearSVC(),
+    NuSVC(),
+    KNeighborsClassifier(n_neighbors=22),
+]
+modelMetrics = []
+for model in models:
+    model_name = model.__class__.__name__
+    model.fit(X_train, y_train)
+    predictions = model.predict(X_test)
+    model_score = model.score(X_test, y_test)
+    accuracy = accuracy_score(y_test, predictions)
+    conf_matrix = confusion_matrix(y_test, predictions)
+    print(f"{model_name} Accuracy: {accuracy}")
+    precision = precision_score(y_test, predictions, average='weighted')
+    recall = recall_score(y_test, predictions, average='weighted')
+    f1 = f1_score(y_test, predictions, average='weighted')
+    y_true = y_test
+    y_pred = predictions
+    plot_confusionMatrix(y_true, y_pred)
+    modelMetrics.append({'Model': model_name,'Score': model_score, 'Accuracy': accuracy, 'Precision': precision, 'Recall': recall, 'F1-score': f1, 'Confusion Matrix': conf_matrix})
+
+df = pd.DataFrame(modelMetrics)
+for modelmetric in modelMetrics:
+    print(f"{modelmetric['Model']} Score is {str(modelmetric['Score'])[:4]} ")
+
+print(df)
+
+end = time()
+print(f"Time taken: {end - start} seconds")
+# Compare the two classification models with a plot the difference in accuracy is super small so adjust the plot accodingly
+plt.figure(figsize=(10, 5))
+plt
+plt.bar(df['Model'], df['Accuracy'], label='Accuracy')
+plt.plot(df['Model'], df['Precision'], label='Precision')
+plt.plot(df['Model'], df['Recall'], label='Recall')
+plt.plot(df['Model'], df['F1-score'], label='F1-score')
+plt.title('Model Metrics')
+plt.xlabel('Model')
+plt.ylabel('Metrics')
+plt.legend()
+plt.show()
 
 
-pred = model.predict(pd.DataFrame(game_features))
-print(pred)
+#
+
+# Close the connection
+conn.close()
+
+
+
+
+
+
+
