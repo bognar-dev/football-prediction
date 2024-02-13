@@ -38,7 +38,6 @@ def add_cards(match_data):
     for index, row in match_data.iterrows():
         # Extract the necessary values from the row
 
-
         xml_card_data = row['card']
         home_team_id = row['home_team_api_id']
         away_team_id = row['away_team_api_id']
@@ -121,15 +120,15 @@ def add_fouls(match_data):
 
 
 def add_shotoff(match_data):
+    # Initialize empty lists for each new column
+    home_shotoff_before_half = []
+    home_shotoff_after_half = []
+    away_shotoff_before_half = []
+    away_shotoff_after_half = []
+    total_shotoff_before_half = []
+    total_shotoff_after_half = []
     # Iterate over each row in the DataFrame
     for index, row in match_data.iterrows():
-        # Initialize empty lists for each new column
-        home_shotoff_before_half = []
-        home_shotoff_after_half = []
-        away_shotoff_before_half = []
-        away_shotoff_after_half = []
-        total_shotoff_before_half = []
-        total_shotoff_after_half = []
         # Extract the necessary values from the row
         xml_foulcommit_data = row['shotoff']
         home_team_id = row['home_team_api_id']
@@ -196,15 +195,14 @@ def add_overall_rating(match_data, player_stats_data):
 
 def add_shoton(match_data):
     # Iterate over each row in the DataFrame
+    # Initialize the lists for this row
+    home_shoton_before_half = []
+    home_shoton_after_half = []
+    away_shoton_before_half = []
+    away_shoton_after_half = []
+    total_shoton_before_half = []
+    total_shoton_after_half = []
     for index, row in match_data.iterrows():
-        # Initialize the lists for this row
-        home_shoton_before_half = []
-        home_shoton_after_half = []
-        away_shoton_before_half = []
-        away_shoton_after_half = []
-        total_shoton_before_half = []
-        total_shoton_after_half = []
-
         # Extract the necessary values from the row
         xml_shoton_data = row['shoton']
         home_team_id = row['home_team_api_id']
@@ -221,13 +219,13 @@ def add_shoton(match_data):
         total_shoton_before_half.append(shoton_data[4])
         total_shoton_after_half.append(shoton_data[5])
 
-        # Add the new columns to the DataFrame
-        match_data['home_shoton_before_half'] = home_shoton_before_half
-        match_data['home_shoton_after_half'] = home_shoton_after_half
-        match_data['away_shoton_before_half'] = away_shoton_before_half
-        match_data['away_shoton_after_half'] = away_shoton_after_half
-        match_data['total_shoton_before_half'] = total_shoton_before_half
-        match_data['total_shoton_after_half'] = total_shoton_after_half
+    # Add the new columns to the DataFrame
+    match_data['home_shoton_before_half'] = home_shoton_before_half
+    match_data['home_shoton_after_half'] = home_shoton_after_half
+    match_data['away_shoton_before_half'] = away_shoton_before_half
+    match_data['away_shoton_after_half'] = away_shoton_after_half
+    match_data['total_shoton_before_half'] = total_shoton_before_half
+    match_data['total_shoton_after_half'] = total_shoton_after_half
 
     return match_data
 
@@ -274,6 +272,12 @@ def add_goals(match_data):
     match_data['total_goals_before_half'] = total_goals_before_half
     match_data['total_goals_after_half'] = total_goals_after_half
 
+    return match_data
+
+
+def add_shots(match_data):
+    match_data = add_shoton(match_data)
+    match_data = add_shotoff(match_data)
     return match_data
 
 

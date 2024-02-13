@@ -53,7 +53,10 @@ def get_shoton_events(xml_shoton_data, home_team_id, away_team_id):
         stats = value.find('stats')
         if stats is not None and stats.find('shoton') is not None:
             elapsed = int(value.find('elapsed').text)
-            team_id = int(value.find('team').text)
+            if value.find('team') is None:
+                team_id = home_team_id
+            else:
+                team_id = int(value.find('team').text)
             if team_id == home_team_id:
                 if elapsed <= 45:
                     home_shots_before_half += 1
@@ -91,7 +94,10 @@ def get_shotoff_events(xml_shotoff_data, home_team_id, away_team_id):
         stats = value.find('stats')
         if stats is not None and stats.find('shotoff') is not None:
             elapsed = int(value.find('elapsed').text)
-            team_id = int(value.find('team').text)
+            if value.find('team') is None:
+                team_id = home_team_id
+            else:
+                team_id = int(value.find('team').text)
             if team_id == home_team_id:
                 if elapsed <= 45:
                     home_shots_off_before_half += 1
